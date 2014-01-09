@@ -1,0 +1,259 @@
+<!doctype html>
+
+<html>
+  
+  <head>
+    <title>Coingen</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://coingen.bluematt.me/jquery.scrollTo.min.js"></script>
+    <style type="text/css">
+      body {
+        padding-top: 50px;
+        padding-bottom: 20px;
+      }
+    </style>
+  </head>
+  
+  <body data-spy="scroll" data-target="#side-nav">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Coingen</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active">
+              <a href="#">Build a New Coin</a>
+            </li>
+            <li>
+              <a href="status.html">Check Status</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-3">
+          <div class="navbar navbar-default affix">
+            <div class="container">
+              <div id="side-nav">
+                <ul class="nav nav-list">
+                  <li class="active">
+                    <a href="#basic">Basic Information</a>
+                  </li>
+                  <li>
+                    <a href="#details">Details</a>
+                  </li>
+                  <li>
+                    <a href="#advanced">Advanced Settings</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-9">
+          <div class="jumbotron" id="pre-alerts">
+            <div class="container">
+              <h1>Coingen Beta</h1>
+              <p>Think you can market an altcoin better than Dogecoin, Catcoin, or even Litecoin? Want to create your own coin and get in on this gravy train? Follow this simple form to get started with your very own altcoin!</p>
+              <h5>Note that purchases do not currently include builds for OSX, those may be added later at additional cost</h5>
+              <h5>Builds and source are delivered within 30 minutes of receipt of payment.</h5>
+            </div>
+          </div>
+          <div id="alerts"></div>
+          <div class="row">
+            <form id="form">
+              <div id="basic" class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="panel-title">                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Basic Information</a>                    </h4>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <div class="form-group">
+                      <label class="control-label">Coin Name (one word, case is ignored)</label>
+                      <div class="controls">
+                        <input type="text" class="form-control" placeholder="MagicCoin" name="coinname">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Coin Abbreviation (exactly three letters, eg BTC)</label>
+                      <div class="controls">
+                        <input type="text" class="form-control" placeholder="MGC" name="abrev">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Coin Icon (256x256)</label>
+                      <div class="controls">
+                        <input type="file" class="form-control" name="icon">
+                      </div>
+                    </div>
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" value="true" name="customload" id="customLoadCheckbox">Remove Coingen branding on splash screen (0.10 BTC)</label>
+                    </div>
+                    <div class="checkbox">
+                      <label class="control-label">
+                        <input type="checkbox" value="true" name="source" id="sourceCheckbox">Include source (+0.05 BTC)</label>
+                    </div>
+                    <div class="checkbox">
+                      <label class="control-label">
+                        <input type="checkbox" value="true" name="hidden">Do not display my coin on the public status page (I understand that if I lose my private link, I will lose access to my coin).</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="details" class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="panel-title">                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" style="color:black;">Details</a>                    </h4>
+                </div>
+                <div id="collapseTwo" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <div class="form-group">
+                      <label class="control-label">Proof of Work Algorithm</label>
+                      <div class="controls">
+                        <select class="form-control" name="pow">
+                          <option value="sha256">SHA256 (like Bitcoin)</option>
+                          <option value="scrypt">Scrypt (like Litecoin)</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Block Rate (in seconds)</label>
+                      <div class="controls">
+                        <input type="number" class="form-control" value="600" name="blockrate" id="blockrate">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Initial value per block</label>
+                      <div class="controls">
+                        <input type="number" class="form-control" value="50" name="initvalue" id="initvalue">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Block halving rate</label>
+                      <div class="controls">
+                        <input type="number" class="form-control" value="210000" name="halfrate" id="halfrate">
+                      </div>
+                    </div>
+                    <label>Maximum coins: <span id="maxcoins">21000000</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div id="advanced" class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="panel-title">                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">Advanced Settings</a></h4>
+                </div>
+                <div id="collapseThree" class="panel-collapse collapse">
+                  <div class="panel-body">
+                    <div class="form-group">
+                      <label class="control-label">Port Number</label>
+                      <div class="controls">
+                        <input type="number" class="form-control" value="9336" name="port">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <button type="button" class="btn btn-primary" data-loading-text="Loading..." id="submitButton">Create my Coin! (0.01 BTC)</button>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <footer>
+        <p>&copy; Matt Corallo (coingen&lt;at&gt;bluematt dot me)</at><br>
+          <a href="bitcoin:1NooqZjmK5pc6W1B9HQaHJ1PgfSPDyEtbo">Donations: 1NooqZjmK5pc6W1B9HQaHJ1PgfSPDyEtbo</a></p>
+      </footer>
+    </div>
+    <script type="text/javascript">
+      (function($) {
+        $.fn.serializefiles = function() {
+          var obj = $(this); /* ADD FILE TO PARAM AJAX */
+          var formData = new FormData();
+          $.each($(obj).find("input[type='file']"), function(i, tag) {
+            $.each($(tag)[0].files, function(i, file) {
+              formData.append(tag.name, file);
+            });
+          });
+          var params = $(obj).serializeArray();
+          $.each(params, function(i, val) {
+            formData.append(val.name, val.value);
+          });
+          return formData;
+        };
+      })(jQuery);
+      $('#submitButton').click(function() {
+        var btn = $(this);
+        btn.button('loading');
+        $.ajax("/create.json", {
+          type: "POST",
+          data: $('#form').serializefiles(),
+          cache: false,
+          contentType: false,
+          processData: false,
+          success: function(response, textStatus, jqXHR) {
+            btn.button('reset');
+            var alerts = $('#alerts');
+            alerts.html('');
+            if (response['success'] != true || response['redirect'] == undefined) {
+              if (response['errors'] == undefined || response['errors'].length <= 0) {
+                alerts.html('<div class="alert alert-warning">Server fucked up...try again later.</div>');
+              } else {
+                for (i = 0; i < response['errors'].length; i++) {
+                  alerts.append('<div class="alert alert-warning">' + response['errors'][i] + '</div>');
+                }
+              }
+              $.scrollTo('#pre-alerts', 800);
+            } else {
+              window.location.href = response['redirect'];
+            }
+          },
+          error: function(response, textStatus, jqXHR) {
+            btn.button('reset');
+            $('#alerts').html('<div class="alert alert-warning">Server fucked up...try again later.</div>');
+            $.scrollTo('#pre-alerts', 800);
+          }
+        });
+      });
+
+      function calcCost() {
+        var value = 0.01;
+        if ($("#customLoadCheckbox").is(":checked")) value += 0.1;
+        if ($("#sourceCheckbox").is(":checked")) value += 0.05;
+        $("#submitButton").text("Create my Coin! (" + value.toFixed(3) + " BTC)")
+      }
+      $("#customLoadCheckbox").change(function() {
+        calcCost();
+      });
+      $("#sourceCheckbox").change(function() {
+        calcCost();
+      });
+
+      function calcCoins() {
+        $("#maxcoins").html($("#initvalue").val() * $("#halfrate").val() * 2);
+      }
+      $("#initvalue").change(function() {
+        calcCoins();
+      });
+      $("#initvalue").keyup(function() {
+        calcCoins();
+      });
+      $("#halfrate").change(function() {
+        calcCoins();
+      });
+      $("#halfrate").keyup(function() {
+        calcCoins();
+      });
+    </script>
+  </body>
+
+</html>

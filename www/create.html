@@ -1,0 +1,90 @@
+<?php
+  $coin_name = "";
+  $coin_value = "";
+  $coin_address = "";
+  $url = "";
+  $done = false;
+  if (isset($_GET['id']) && preg_match('/^[0-9a-f]+$/', $_GET['id'])) {
+    $folder = "/scratch/output/".$_GET['id']."/";
+    if (is_dir($folder)) {
+      $file = fopen($folder.'info.txt', 'r');
+      if ($_GET['key']."\n" == fgets($file)) {
+        $coin_name = fgets($file);
+        $btc_info = fopen($folder.'btc_info.txt', 'r');
+        $coin_value = fgets($btc_info);
+        $coin_address = fgets($btc_info);
+        fclose($btc_info);
+        if (is_file($folder.'done')) {
+          $done = true;
+          $url = "http://coingen.bluematt.me/build/".$_GET['id'].".zip";
+        }
+      }
+      fclose($file);
+    }
+  }
+?>
+<!doctype html>
+<html>
+    <head>
+    <title>Altcoin created!</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <style type="text/css">
+      body {
+        padding-top: 50px;
+        padding-bottom: 20px;
+      }
+    </style>
+  </head>
+  
+  <body data-spy="scroll" data-target="#side-nav">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">Coingen</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li>
+              <a href="/">Build a New Coin</a>
+            </li>
+            <li class="">
+              <a href="/status.html">Check Status</a>
+            </li>
+          </ul>
+        </div>
+        <!--/.navbar-collapse -->
+      </div>
+    </div>
+    <div class="container">
+      <div class="row"></div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="jumbotron">
+            <div class="container">
+              <h1>Coingen</h1>
+              <p>We received your request to create <?php echo($coin_name); ?>.</p>
+              <?php if ($done != true) { ?>
+                <p>The monkeys, however, are waiting for <?php echo($coin_value); ?> BTC to be sent to <?php echo($coin_address); ?> before they start building <?php echo($coin_name); ?>.</p>
+              <?php } else { ?>
+                <a class="span2 btn btn-primary" href="<?php echo($url); ?>">Download Result</a>
+              <?php } ?>
+              <p>If your coin is hidden, you will only be able to download the finished product by returning to this page, so <b>bookmark this page now!</b></p>
+            </div>
+          </div>
+          <div class="row"></div>
+        </div>
+      </div>
+      <hr>
+      <footer>
+        <p>&copy; Matt Corallo (coingen-support&lt;at&gt;bluematt dot me)<br><a href="bitcoin:1NooqZjmK5pc6W1B9HQaHJ1PgfSPDyEtbo">Donations: 1NooqZjmK5pc6W1B9HQaHJ1PgfSPDyEtbo</a></p>
+      </footer>
+    </div>
+    <!-- /container -->
+  </body>
+</html>

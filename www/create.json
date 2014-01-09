@@ -1,0 +1,127 @@
+<?php
+	function initrun($network_magic, $private_key) {
+		$errors = array();
+		if (!isset($_FILES['icon']))
+			$errors[] = "Missing icon";
+		if (!isset($_POST['coinname']) || !preg_match('/^[a-zA-z]+$/', $_POST['coinname']))
+			$errors[] = "Coin Name must contain only letters";
+		if (!isset($_POST['abrev']) || !preg_match('/^[a-zA-z]+$/', $_POST['abrev']) || strlen($_POST['abrev']) != 3)
+			$errors[] = "Coin abbreviation must be exactly 3 letters";
+		if (!isset($_POST['pow']) || ($_POST['pow'] != "sha256" && $_POST['pow'] != "scrypt") ||
+				!isset($_POST['port']) || !preg_match('/^[0-9]+$/', $_POST['port']) ||
+				!isset($_POST['blockrate']) || !preg_match('/^[0-9]+$/', $_POST['blockrate']) ||
+				!isset($_POST['initvalue']) || !preg_match('/^[0-9]+$/', $_POST['initvalue']) ||
+				!isset($_POST['halfrate']) || !preg_match('/^[0-9]+$/', $_POST['halfrate']))
+			$errors[] = "Stop trying to break things";
+		else {
+			if ($_POST['port'] < 1024 || $_POST['port'] > 49151)
+				$errors[] = "Port must be > 1023 and < 49152";
+
+			if ($_POST['port'] % 2 != 0 && $_POST['pow'] == "sha256")
+				$errors[] = "Port must be divisible by 2 if the PoW is SHA256";
+
+			if (($_POST['port'] % 2 != 1 || $_POST['port'] % 5 != 0) && $_POST['pow'] == "scrypt")
+				$errors[] = "Port must be end in 5 for a PoW of Scrypt";
+
+			if ($_POST['blockrate'] > 2592000 || $_POST['blockrate'] < 1)
+				$errors[] = "Block rate must be < 2592000 and > 0";
+
+			if ($_POST['initvalue'] < 1)
+				$errors[] = "Initial block subsidy must be <  and > 0";
+
+			if ($_POST['halfrate'] < 1)
+				$errors[] = "Block rate must be > 2592000 and > 0";
+
+			if ($_POST['initvalue'] > 1000000000 || $_POST['halfrate'] > 1000000000 || $_POST['halfrate'] * $_POST['initvalue'] * 2 > 900000000)
+				$errors[] = "Maximum coins must be < 900000000 (altcoins which break this rule will crash when they approach it, even if they claim to have large max coins)";
+		}
+
+		if (count($errors) == 0) {
+			try {
+				$logo = new Imagick($_FILES['icon']['tmp_name']);
+				$logo->resizeImage(256, 256, 0, 1);
+
+				// Good to go, lets get started...
+				$folder = "/scratch/output/".$network_magic."/";
+				if (is_dir($folder) || !mkdir($folder)) {
+					$errors[] = "Server error, please try again later";
+					return $errors;
+				}
+
+				$logo->writeImage($folder."logo.png");
+				$logo->destroy();
+
+				$cost = 0.01;
+				$coininfo = $private_key."\n";
+				$coininfo .= strtolower($_POST['coinname'])."\n";
+				$coininfo .= strtoupper($_POST['abrev'])."\n";
+				$coininfo .= $_POST['pow']."\n";
+				$coininfo .= $_POST['port']."\n";
+
+				if (isset($_POST['customload']) && $_POST['customload'] == "true") {
+					$coininfo .= "true\n";
+					$cost += 0.1;
+				} else
+					$coininfo .= "false\n";
+
+				if (isset($_POST['source']) && $_POST['source'] == "true") {
+					$coininfo .= "true\n";
+					$cost += 0.05;
+				} else
+					$coininfo .= "false\n";
+
+				$coininfo .= $_POST['blockrate']."\n";
+				$coininfo .= $_POST['initvalue']."\n";
+				$coininfo .= $_POST['halfrate']."\n";
+
+				if (isset($_POST['hidden']) && $_POST['hidden'] == "true")
+					$coininfo .= "true\n";
+				else
+					$coininfo .= "false\n";
+
+				$btcinfo = $cost."\n";
+
+				$address_lock = fopen("/scratch/address_lock", "r");
+				flock($address_lock, LOCK_EX);
+				$address_file = file("/scratch/addresses.txt");
+				$btcinfo .= $address_file[0];
+				unset($address_file[0]);
+				file_put_contents("/scratch/addresses.txt", $address_file);
+				flock($address_lock, LOCK_UN);
+				fclose($address_lock);
+
+				$btcinfo .= "0\n";
+
+				if (file_put_contents($folder."btc_info.txt", $btcinfo) != strlen($btcinfo)) {
+					system("rm -rf ".escapeshellarg($folder));
+					$errors[] = "Server error, please try again later";
+					return $errors;
+				}
+
+				if (file_put_contents($folder."info.txt", $coininfo) != strlen($coininfo)) {
+					system("rm -rf ".escapeshellarg($folder));
+					$errors[] = "Server error, please try again later";
+					return $errors;
+				}
+			} catch (ImagickException $e) {
+				$errors[] = "Provided image was not decodable";
+			}
+		}
+		return $errors;
+	}
+
+	$network_magic = bin2hex(openssl_random_pseudo_bytes(4));
+	$private_key = bin2hex(openssl_random_pseudo_bytes(10));
+	$errors = initrun($network_magic, $private_key);
+
+	$res = array();
+	if (count($errors) != 0) {
+		$res = array("success" => false,
+					"errors" => $errors);
+	} else {
+		$res = array("success" => true,
+					"redirect" => "http://coingen.bluematt.me/create.html?id=".$network_magic."&key=".$private_key);
+	}
+	header('Content-type: application/json');
+	echo json_encode($res);
+?>
